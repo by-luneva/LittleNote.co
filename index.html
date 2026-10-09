@@ -5,13 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LittleNote.co - Spesial Untukmu</title>
     
-    <!-- Meta Tags untuk Preview Sosmed dengan URL Absolut -->
-    <meta property="og:title" content="LittleNote.co | Spesial Untuk Bulan 🤍">
-    <meta property="og:description" content="Sebuah kejutan kecil, lagu spesial, dan core memory yang dirangkum khusus untuk merayakan hari ulang tahunmu. Buka sekarang!">
+    <!-- Meta Tags Lengkap untuk Preview Sosmed & WhatsApp (Open Graph & Twitter Card) -->
+    <meta property="og:site_name" content="LittleNote.co">
+    <meta property="og:title" content="LittleNote.co | Spesial Untukmu">
+    <meta property="og:description" content="Sebuah kejutan kecil, lagu spesial, dan core memory yang dirangkum khusus untuk merayakan hari spesialmu. Buka sekarang!">
     <meta property="og:image" content="https://by-luneva.github.io/LittleNote.co/thumbnail.jpg">
+    <meta property="og:image:secure_url" content="https://by-luneva.github.io/LittleNote.co/thumbnail.jpg">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     <meta property="og:url" content="https://by-luneva.github.io/LittleNote.co/">
     <meta property="og:type" content="website">
     
+    <!-- Twitter Card Meta Tags agar support di berbagai platform -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="LittleNote.co | Spesial Untukmu">
+    <meta name="twitter:description" content="Sebuah kejutan kecil, lagu spesial, dan core memory yang dirangkum khusus untuk merayakan hari spesialmu. Buka sekarang!">
+    <meta name="twitter:image" content="https://by-luneva.github.io/LittleNote.co/thumbnail.jpg">
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -140,9 +151,9 @@
         .progress-bar { width: 100%; height: 8px; background: #ffe5ec; border-radius: 10px; margin-top: 18px; overflow: hidden; }
         .progress-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #ff758c, #ff7eb3); transition: width 0.2s ease; border-radius: 10px; }
 
-        /* PIN Screen - 6 Digits */
-        .pin-container { display: flex; justify-content: center; gap: 8px; margin: 15px 0; }
-        .pin-dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #ff758c; background: transparent; transition: all 0.3s ease; }
+        /* PIN Screen - 4 Digits */
+        .pin-container { display: flex; justify-content: center; gap: 10px; margin: 15px 0; }
+        .pin-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #ff758c; background: transparent; transition: all 0.3s ease; }
         .pin-dot.filled { background: #ff758c; transform: scale(1.2); box-shadow: 0 0 8px rgba(255, 117, 140, 0.6); }
         .shake { animation: shake 0.4s ease-in-out; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
@@ -164,7 +175,7 @@
         .unified-title { font-family: 'Playfair Display', serif; font-size: 26px; color: #d85777; font-weight: 700; margin-bottom: 8px; }
         .unified-subtitle { font-family: 'Playfair Display', italic; font-size: 19px; color: #e06d8b; font-style: italic; }
 
-        /* Scroll Prompt (Instruksi) - Warna Diubah menjadi Abu-abu */
+        /* Scroll Prompt */
         .scroll-prompt-simple {
             display: flex;
             flex-direction: column;
@@ -466,18 +477,16 @@
                 </div>
             </div>
 
-            <!-- SCREEN 2: PIN KODE -->
+            <!-- SCREEN 2: PIN KODE (4 DIGITS) -->
             <div id="screenPin" class="screen">
                 <h2 class="pin-title">Ada Hadiah Untukmu</h2>
-                <p style="font-size: 12px; color: #666; margin-bottom: 12px;">Masukkan kode rahasia (Pin: 000000)</p>
+                <p style="font-size: 12px; color: #666; margin-bottom: 12px;">Masukkan 4 digit kode rahasia (0000)</p>
                 
                 <div class="pin-container" id="pinContainer">
                     <div class="pin-dot" id="dot1"></div>
                     <div class="pin-dot" id="dot2"></div>
                     <div class="pin-dot" id="dot3"></div>
                     <div class="pin-dot" id="dot4"></div>
-                    <div class="pin-dot" id="dot5"></div>
-                    <div class="pin-dot" id="dot6"></div>
                 </div>
 
                 <div class="keypad">
@@ -610,14 +619,62 @@
             setTimeout(() => { container.style.height = targetScreen.scrollHeight + 25 + 'px'; }, 10);
         }
 
-        window.addEventListener('load', () => { updateContainerHeight('screenLoading'); });
+        window.addEventListener('load', () => { 
+            updateContainerHeight('screenLoading');
+            history.replaceState({ screen: 'screenLoading' }, '', '');
+        });
 
-        function switchScreen(hideId, showId, title) {
+        function switchScreen(hideId, showId, title, pushHistory = true) {
             document.getElementById(hideId).classList.remove('active');
             document.getElementById(showId).classList.add('active');
             updateContainerHeight(showId);
             if (title) document.getElementById('windowTitle').innerText = title;
+
+            if (pushHistory) {
+                history.pushState({ screen: showId }, '', '');
+            }
         }
+
+        // --- Fitur Tombol Back HP / Browser ---
+        window.addEventListener('popstate', (event) => {
+            const lightbox = document.getElementById('lightbox');
+            if (lightbox.classList.contains('active')) {
+                lightbox.classList.remove('active');
+                return;
+            }
+
+            const candleOverlay = document.getElementById('candleOverlay');
+            if (candleOverlay.classList.contains('active')) {
+                candleOverlay.classList.remove('active');
+                return;
+            }
+
+            if (event.state && event.state.screen) {
+                const targetScreen = event.state.screen;
+                
+                if (targetScreen === 'screenLoading') {
+                    document.getElementById('screenPin').classList.remove('active');
+                    document.getElementById('screenMain').classList.remove('active');
+                    document.getElementById('screenLoading').classList.add('active');
+                    updateContainerHeight('screenLoading');
+                    document.getElementById('windowTitle').innerText = 'LittleNote.co';
+                } else if (targetScreen === 'screenPin') {
+                    document.getElementById('screenMain').classList.remove('active');
+                    document.getElementById('screenLoading').classList.remove('active');
+                    document.getElementById('screenPin').classList.add('active');
+                    updateContainerHeight('screenPin');
+                    document.getElementById('windowTitle').innerText = 'LittleNote.co';
+                } else if (targetScreen === 'screenMain') {
+                    document.getElementById('screenPin').classList.remove('active');
+                    document.getElementById('screenLoading').classList.remove('active');
+                    document.getElementById('screenMain').classList.add('active');
+                    updateContainerHeight('screenMain');
+                    document.getElementById('windowTitle').innerText = 'LittleNote.co';
+                }
+            } else {
+                history.back();
+            }
+        });
 
         // --- Real Asset Loading Tracker ---
         let currentProgress = 0;
@@ -635,7 +692,7 @@
 
             if (currentProgress >= 100) {
                 setTimeout(() => {
-                    switchScreen('screenLoading', 'screenPin', 'buka-hadiah.exe');
+                    switchScreen('screenLoading', 'screenPin', 'LittleNote.co', true);
                 }, 400);
             }
         }
@@ -660,10 +717,10 @@
         }
 
         let currentPin = '';
-        const correctPin = '000000';
+        const correctPin = '0000'; // PIN diubah menjadi 4 digit
 
         function pressKey(num) {
-            if (currentPin.length < 6) {
+            if (currentPin.length < 4) { // Batasi maksimal 4 digit
                 currentPin += num;
                 updatePinDisplay();
             }
@@ -672,7 +729,7 @@
         function clearPin() { currentPin = ''; updatePinDisplay(); }
         
         function updatePinDisplay() {
-            for (let i = 1; i <= 6; i++) {
+            for (let i = 1; i <= 4; i++) {
                 const dot = document.getElementById(`dot${i}`);
                 if (i <= currentPin.length) dot.classList.add('filled');
                 else dot.classList.remove('filled');
@@ -681,7 +738,7 @@
 
         function verifyPin() {
             if (currentPin === correctPin) {
-                switchScreen('screenPin', 'screenMain', 'LittleNote.co');
+                switchScreen('screenPin', 'screenMain', 'LittleNote.co', true);
                 const bgMusic = document.getElementById('bgMusic');
                 bgMusic.play().catch((err) => { console.log("Auto-play blocked", err); });
             } else {
@@ -860,7 +917,6 @@
                 obj.style.filter = 'brightness(0.3)';
                 text.innerHTML = '<i style="color: #fff; font-size:20px;">Fyuuuuh...</i>';
                 
-                // Jeda 1.2 detik lalu BOOM PARTY!
                 setTimeout(triggerPartyMode, 1200);
             }
         }
@@ -869,11 +925,9 @@
             const overlay = document.getElementById('candleOverlay');
             overlay.classList.add('party-mode');
             
-            // Sembunyikan lilin
             document.getElementById('candleObj').style.display = 'none';
             document.getElementById('candleText').style.display = 'none';
             
-            // Munculkan Popup & Confetti
             document.getElementById('finalPopup').style.display = 'flex';
             document.getElementById('confettiContainer').style.display = 'block';
             
@@ -891,7 +945,6 @@
                 conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
                 conf.style.top = '-' + (Math.random() * 20 + 10) + 'px';
                 
-                // Variasi durasi jatuh & bentuk
                 const duration = Math.random() * 3 + 2; 
                 const delay = Math.random() * 1.5; 
                 
